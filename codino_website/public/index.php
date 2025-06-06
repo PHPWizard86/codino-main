@@ -8,17 +8,30 @@ error_reporting(E_ALL);
 define('BASE_PATH', dirname(__DIR__));
 require_once BASE_PATH . '/config/config.php'; // For SITE_NAME, BASE_URL, TEMPLATES_PATH
 
-\$request_uri = \$_SERVER['REQUEST_URI'];
-\$script_name = \$_SERVER['SCRIPT_NAME'];
-\$base_path_uri = str_replace('/index.php', '', \$script_name);
-\$route_path = str_replace(\$base_path_uri, '', \$request_uri);
-\$route_path = trim(\$route_path, '/');
+// --- Routing Logic ---
+\$request_uri = \$_SERVER['REQUEST_URI'] ?? '';
+\$script_name = \$_SERVER['SCRIPT_NAME'] ?? '';
 
-// Basic query string router: index.php?route=myroute
-\$route = \$_GET['route'] ?? DEFAULT_ROUTE;
+// Calculate the base path of the URI if the script is not in the web root
+\$base_uri_path = str_replace('/index.php', '', \$script_name);
+\$path_to_match = \$base_uri_path;
+
+// If the request URI starts with the base URI path, remove it to get the clean route
+if (strpos(\$request_uri, \$path_to_match) === 0) {
+    \$route_param_part = substr(\$request_uri, strlen(\$path_to_match));
+} else {
+    \$route_param_part = \$request_uri;
+}
+
+// Parse the query string part to get the 'route' parameter
+// Example: /codino/public/index.php?route=login  or /codino/public/?route=login
+\$query_string = parse_url(\$route_param_part, PHP_URL_QUERY);
+parse_str(\$query_string ?? '', \$query_params);
+\$route = \$query_params['route'] ?? DEFAULT_ROUTE;
+// --- End Routing Logic ---
 
 
-// Simple router
+// Simple router based on the 'route' GET parameter
 switch (\$route) {
     case 'home':
         require_once TEMPLATES_PATH . '/home.php';
@@ -38,12 +51,12 @@ switch (\$route) {
     case 'dashboard_websites':
         require_once TEMPLATES_PATH . '/dashboard/websites.php';
         break;
+    // Add other cases for dashboard tickets etc. later
     default:
-        // For now, just a simple message. Later, a proper 404 template.
         http_response_code(404);
         echo "<h1>404 - Page Not Found</h1>";
         echo "<p>The page you requested for route '<strong>" . htmlspecialchars(\$route) . "</strong>' could not be found.</p>";
-        echo "<p><a href='index.php?route=home'>Go to Homepage</a></p>";
+        echo "<p><a href='" . htmlspecialchars(BASE_URL) . "/index.php?route=home'>Go to Homepage</a></p>";
         break;
 }
 
