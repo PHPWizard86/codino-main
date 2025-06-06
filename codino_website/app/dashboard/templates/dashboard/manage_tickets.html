@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+
+    {% if form.website_id.choices %}
+        <h2>Submit New Ticket</h2>
+        <form action="{{ url_for('dashboard.manage_tickets') }}" method="post" novalidate enctype="multipart/form-data"> {# Added enctype for file uploads later #}
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.website_id.label }}<br>
+                {{ form.website_id() }}<br>
+                {% for error in form.website_id.errors %}
+                <span style="color: red;">[{{ error }}]</span><br>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.title.label }}<br>
+                {{ form.title(size=50) }}<br>
+                {% for error in form.title.errors %}
+                <span style="color: red;">[{{ error }}]</span><br>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.description.label }}<br>
+                {{ form.description(cols=48, rows=5) }}<br>
+                {% for error in form.description.errors %}
+                <span style="color: red;">[{{ error }}]</span><br>
+                {% endfor %}
+            </p>
+            {# File upload field - to be fully implemented later
+            <p>
+                {{ form.attachments.label }}<br>
+                {{ form.attachments() }}<br>
+                {% for error in form.attachments.errors %}
+                <span style="color: red;">[{{ error }}]</span><br>
+                {% endfor %}
+            </p>
+            #}
+            <p>{{ form.submit() }}</p>
+        </form>
+    {% else %}
+        <div class="alert alert-warning"> {# Using a more standard class name for alerts #}
+            You must <a href="{{ url_for('dashboard.manage_websites') }}">register a website</a> before you can submit a support ticket.
+        </div>
+    {% endif %}
+
+    <hr>
+    <h2>Your Submitted Tickets</h2>
+    {% if tickets %}
+        <table border="1" style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Website</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Created On</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                    <tr>
+                        <td>{{ ticket.id }}</td>
+                        <td>{{ ticket.website.domain_name }}</td>
+                        <td>{{ ticket.title }}</td>
+                        <td>{{ ticket.status.name if ticket.status else 'N/A' }}</td>
+                        <td>{{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td><a href="{{ url_for('dashboard.view_ticket', ticket_id=ticket.id) }}">View</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have not submitted any support tickets yet.</p>
+    {% endif %}
+{% endblock %}

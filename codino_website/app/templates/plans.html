@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+    <p>Choose the plan that best suits your needs. (Payment integration coming soon!)</p>
+
+    <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+        {% if plans %}
+            {% for plan in plans %}
+                <div style="border: 1px solid #ccc; padding: 20px; margin: 10px; width: 250px; text-align: center;">
+                    <h2>{{ plan.name }}</h2>
+                    <h3>
+                        {% if plan.price == 0.0 %}
+                            Free
+                        {% else %}
+                            ${{ "%.2f"|format(plan.price) }}/month {# Basic price formatting #}
+                        {% endif %}
+                    </h3>
+                    <p><strong>Ticket Limit:</strong> {{ plan.ticket_limit if plan.ticket_limit is not none else 'Unlimited' }} per month</p>
+                    <p><em>{{ plan.features }}</em></p>
+                    {# Add a "Choose Plan" button later that links to registration or payment #}
+                    {% if current_user.is_authenticated and current_user.plan_id == plan.id %}
+                        <p><button disabled>Current Plan</button></p>
+                    {% elif current_user.is_authenticated %}
+                        <p><button>Choose Plan (Action N/A)</button></p>
+                    {% else %}
+                         <p><a href="{{ url_for('auth.register') }}"><button>Sign Up & Choose</button></a></p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No subscription plans are currently available. Please check back later.</p>
+        {% endif %}
+    </div>
+{% endblock %}

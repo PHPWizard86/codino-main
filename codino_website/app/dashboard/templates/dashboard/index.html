@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+    <p>Welcome to your Codino dashboard, {{ current_user.name or current_user.email }}!</p>
+    <ul>
+        <li><a href="{{ url_for('dashboard.profile') }}">Edit Profile</a></li>
+        <li><a href="{{ url_for('dashboard.manage_websites') }}">Manage My Websites</a></li>
+        <li><a href="{{ url_for('dashboard.manage_tickets') }}">Manage Support Tickets</a></li>
+    </ul>
+{% endblock %}
