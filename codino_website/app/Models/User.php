@@ -1,0 +1,85 @@
+<?php
+
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens; // Added for Sanctum
+use Tymon\JWTAuth\Contracts\JWTSubject; // Added for JWT
+
+class User extends Authenticatable implements JWTSubject // Implemented JWTSubject
+{
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasApiTokens, HasFactory, Notifiable; // Added HasApiTokens
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'username', // Added
+        'name',
+        'email',
+        'password',
+        'phone',                // Added
+        'language_preference',  // Added
+        'plan_id',              // Added
+        // 'account_status' could be managed internally, not mass assignable initially
+        // 'avatar', 'timezone', 'two_factor_secret' usually set via specific methods/services
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+        'two_factor_secret', // Added
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'last_login' => 'datetime', // Added based on our migration
+            'two_factor_confirmed_at' => 'datetime', // Added based on our migration
+        ];
+    }
+
+    // Relationship to Plan (if you want to access the Plan object from User)
+    // public function plan()
+    // {
+    //     return \$this->belongsTo(Plan::class);
+    // }
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {
+        return \$this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return []; // Add custom claims here if needed, e.g., roles, plan_id
+    }
+}
