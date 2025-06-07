@@ -14,7 +14,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Authentication Check
 if (!isset(\$_SESSION['user_id'])) {
-    \$_SESSION['flash_message'] = 'Please log in to access your profile.';
+    \$_SESSION['flash_message'] = '[لطفا برای دسترسی به پروفایل خود وارد شوید.]';
     \$_SESSION['flash_type'] = 'danger';
     header('Location: ' . BASE_URL . '/index.php?route=login');
     exit;
@@ -38,7 +38,7 @@ try {
 
 if (!\$user) {
     // This case should ideally not happen if user_id in session is valid
-    \$_SESSION['flash_message'] = 'Could not retrieve your profile data.';
+    \$_SESSION['flash_message'] = '[بازیابی اطلاعات پروفایل شما امکان پذیر نبود.]';
     \$_SESSION['flash_type'] = 'danger';
     // Potentially log out user or redirect to dashboard home
     header('Location: ' . BASE_URL . '/index.php?route=dashboard_home');
@@ -52,63 +52,81 @@ if (!\$user) {
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile - <?php echo SITE_NAME; ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <title>[پروفایل کاربر] - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css">
-    <style>
-        .profile-container { max-width: 700px; margin: 20px auto; padding: 20px; background-color: #fff; border: 1px solid #ddd; border-radius: 5px;}
-        .profile-details { margin-top: 20px; }
-        .profile-details p { font-size: 1.1em; margin-bottom: 10px; padding: 8px; border-bottom: 1px solid #eee; }
-        .profile-details strong { display: inline-block; width: 150px; color: #333; }
-        /* Edit button styling (placeholder for now) */
-        .edit-profile-btn {
-            display: inline-block; padding: 10px 15px; margin-top:20px;
-            background-color: #007bff; color: white; text-decoration: none;
-            border-radius: 4px; border: none; cursor: pointer;
-        }
-        .edit-profile-btn:hover { background-color: #0056b3; }
-    </style>
 </head>
 <body>
     <header>
-        <h1><a href="<?php echo BASE_URL; ?>/index.php?route=home" style="color:white;text-decoration:none;"><?php echo SITE_NAME; ?></a> - User Profile</h1>
-        <nav>
-            <a href="<?php echo BASE_URL; ?>/index.php?route=dashboard_home">Dashboard Home</a>
-            <a href="<?php echo BASE_URL; ?>/logout.php">Logout</a>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<?php echo BASE_URL; ?>/index.php?route=home"><?php echo SITE_NAME; ?></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="[تغییر وضعیت ناوبری]">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php?route=home">[خانه]</a>
+                        </li>
+                        <?php if (isset(\$_SESSION['user_id'])): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>/index.php?route=dashboard_home">[داشبورد]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>/logout.php">[خروج] (<?php echo \$user_name_display; ?>)</a>
+                            </li>
+                        <?php else: ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php?route=login">[ورود]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php?route=register">[ثبت نام]</a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+            </div>
         </nav>
     </header>
 
-    <main class="profile-container">
-        <h2>Your Profile Information</h2>
+    <main class="container mt-4">
+        <h2>[اطلاعات پروفایل شما]</h2>
 
         <?php if (isset(\$_SESSION['flash_message'])): ?>
-            <div class="alert alert-<?php echo \$_SESSION['flash_type'] ?? 'info'; ?>" style="margin-bottom:20px; padding: 10px; border-radius: 4px;
-                 <?php if((\$_SESSION['flash_type'] ?? 'info') == 'success'): ?> background-color:#d4edda; color:#155724; border:1px solid #c3e6cb;
-                 <?php else: ?> background-color:#f8d7da; color:#721c24; border:1px solid #f5c6cb; <?php endif; ?>
-            ">
-                <?php echo \$_SESSION['flash_message']; ?>
+            <div class="alert alert-<?php echo htmlspecialchars(\$_SESSION['flash_type'] ?? 'info'); ?> alert-dismissible fade show" role="alert">
+                <?php echo htmlspecialchars(\$_SESSION['flash_message']); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="[بستن]"></button>
             </div>
             <?php unset(\$_SESSION['flash_message']); unset(\$_SESSION['flash_type']); ?>
         <?php endif; ?>
 
         <div class="profile-details">
-            <p><strong>Name:</strong> <?php echo \$user_name_display; ?></p>
-            <p><strong>Email:</strong> <?php echo \$user_email_display; ?></p>
-            <p><strong>Phone Number:</strong> <?php echo \$user_phone_display; ?></p>
-            <p><strong>Subscription Plan:</strong> <?php echo \$user_plan_display; ?></p>
+            <p><strong>[نام:]</strong> <?php echo \$user_name_display; ?></p>
+            <p><strong>[ایمیل:]</strong> <?php echo \$user_email_display; ?></p>
+            <p><strong>[شماره تلفن:]</strong> <?php echo \$user_phone_display; ?></p>
+            <p><strong>[پلن اشتراک:]</strong> <?php echo \$user_plan_display; ?></p>
         </div>
 
         {# Placeholder for edit profile form/link #}
-        <button class="edit-profile-btn" onclick="alert('Edit profile functionality coming soon!');">Edit Profile</button>
-        <button class="edit-profile-btn" onclick="alert('Change password functionality coming soon!');">Change Password</button>
+        <button class="btn btn-info edit-profile-btn">[ویرایش پروفایل]</button>
+        <button class="btn btn-warning edit-profile-btn">[تغییر رمز عبور]</button>
 
     </main>
 
-    <footer>
-        <p>&copy; <?php echo date("Y"); ?> <?php echo SITE_NAME; ?>. All rights reserved.</p>
+    <footer class="bg-dark text-white text-center p-4 mt-auto">
+        <div class="container">
+            <p class="mb-0">&copy; <?php echo date("Y"); ?> <?php echo SITE_NAME; ?> - [تمامی حقوق محفوظ است.]</p>
+            <p class="mb-0">
+                <a href="<?php echo BASE_URL; ?>/index.php?route=terms" class="text-white-50">[شرایط استفاده از خدمات]</a> |
+                <a href="<?php echo BASE_URL; ?>/index.php?route=contact" class="text-white-50">[تماس با ما]</a>
+            </p>
+        </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -7,78 +7,104 @@ if (session_status() == PHP_SESSION_NONE) session_start();
 unset(\$_SESSION['errors']); unset(\$_SESSION['old_input']);
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Registration - <?php echo SITE_NAME; ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <title>[ثبت نام کاربر] - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css">
-    <style>
-        .form-container { max-width: 500px; margin: 30px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9;}
-        .form-container h2 { text-align: center; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"] { width: 95%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-        .form-group .error-message { color: red; font-size: 0.9em; margin-top: 5px;}
-        .form-group button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
-        .form-group button:hover { background-color: #0056b3; }
-        .alert { padding: 10px; margin-bottom:15px; border-radius:4px; }
-        .alert-success { background-color:#d4edda; color:#155724; border:1px solid #c3e6cb; }
-        .alert-danger { background-color:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
-    </style>
 </head>
 <body>
     <header>
-        <h1><a href="<?php echo BASE_URL; ?>/index.php?route=home" style="color:white;text-decoration:none;"><?php echo SITE_NAME; ?></a></h1>
-        <nav>
-            <a href="<?php echo BASE_URL; ?>/index.php?route=home">Home</a>
-            <?php if (isset(\$_SESSION['user_id'])): ?>
-                <a href="<?php echo BASE_URL; ?>/index.php?route=dashboard_home">Dashboard</a>
-                <a href="<?php echo BASE_URL; ?>/logout.php">Logout</a>
-            <?php else: ?>
-                <a href="<?php echo BASE_URL; ?>/index.php?route=login">Login</a>
-            <?php endif; ?>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<?php echo BASE_URL; ?>/index.php?route=home"><?php echo SITE_NAME; ?></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="[تغییر وضعیت ناوبری]">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php?route=home">[خانه]</a>
+                        </li>
+                        <?php if (isset(\$_SESSION['user_id'])): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php?route=dashboard_home">[داشبورد]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>/logout.php">[خروج] (<?php echo htmlspecialchars(\$_SESSION['user_name']); ?>)</a>
+                            </li>
+                        <?php else: ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php?route=login">[ورود]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>/index.php?route=register">[ثبت نام]</a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+            </div>
         </nav>
     </header>
-    <main>
-        <div class="form-container">
-            <h2>Create Your Account</h2>
-            <?php if (!empty(\$_SESSION['flash_message'])): ?>
-                <div class="alert alert-<?php echo \$_SESSION['flash_type'] ?? 'info'; ?>">
-                    <?php echo \$_SESSION['flash_message']; ?>
+    <main class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center">[ایجاد حساب کاربری]</h2>
+                        <?php if (!empty(\$_SESSION['flash_message'])): ?>
+                            <div class="alert alert-<?php echo htmlspecialchars(\$_SESSION['flash_type'] ?? 'info'); ?> alert-dismissible fade show" role="alert">
+                                <?php echo htmlspecialchars(\$_SESSION['flash_message']); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="[بستن]"></button>
+                            </div>
+                            <?php unset(\$_SESSION['flash_message']); unset(\$_SESSION['flash_type']); ?>
+                        <?php endif; ?>
+                        <form action="<?php echo BASE_URL; ?>/register_process.php" method="POST">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">[نام کامل (اختیاری)]</label>
+                                <input type="text" id="name" name="name" class="form-control" value="<?php echo htmlspecialchars(\$old_input['name'] ?? ''); ?>">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">[آدرس ایمیل]</label>
+                                <input type="email" id="email" name="email" class="form-control <?php echo isset(\$errors['email']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars(\$old_input['email'] ?? ''); ?>" required>
+                                <?php if (isset(\$errors['email'])): ?><small class="text-danger d-block"><?php echo htmlspecialchars(\$errors['email'] ?? ''); ?></small><?php endif; ?>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone_number" class="form-label">[شماره موبایل (اختیاری)]</label>
+                                <input type="text" id="phone_number" name="phone_number" class="form-control <?php echo isset(\$errors['phone_number']) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars(\$old_input['phone_number'] ?? ''); ?>">
+                                 <?php if (isset(\$errors['phone_number'])): ?><small class="text-danger d-block"><?php echo htmlspecialchars(\$errors['phone_number'] ?? ''); ?></small><?php endif; ?>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">[رمز عبور]</label>
+                                <input type="password" id="password" name="password" class="form-control <?php echo isset(\$errors['password']) ? 'is-invalid' : ''; ?>" required>
+                                <?php if (isset(\$errors['password'])): ?><small class="text-danger d-block"><?php echo htmlspecialchars(\$errors['password'] ?? ''); ?></small><?php endif; ?>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">[تایید رمز عبور]</label>
+                                <input type="password" id="confirm_password" name="confirm_password" class="form-control <?php echo isset(\$errors['confirm_password']) ? 'is-invalid' : ''; ?>" required>
+                                <?php if (isset(\$errors['confirm_password'])): ?><small class="text-danger d-block"><?php echo htmlspecialchars(\$errors['confirm_password'] ?? ''); ?></small><?php endif; ?>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">[ثبت نام]</button>
+                            </div>
+                        </form>
+                        <p class="text-center mt-3">[قبلا حساب کاربری ساخته اید؟] <a href="<?php echo BASE_URL; ?>/index.php?route=login">[اینجا وارد شوید]</a>.</p>
+                    </div>
                 </div>
-                <?php unset(\$_SESSION['flash_message']); unset(\$_SESSION['flash_type']); ?>
-            <?php endif; ?>
-            <form action="<?php echo BASE_URL; ?>/register_process.php" method="POST">
-                <div class="form-group">
-                    <label for="name">Full Name (Optional)</label>
-                    <input type="text" id="name" name="name" value="<?php echo htmlspecialchars(\$old_input['name'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars(\$old_input['email'] ?? ''); ?>" required>
-                    <?php if (isset(\$errors['email'])): ?><p class="error-message"><?php echo \$errors['email']; ?></p><?php endif; ?>
-                </div>
-                <div class="form-group">
-                    <label for="phone_number">Mobile Number (Optional)</label>
-                    <input type="text" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars(\$old_input['phone_number'] ?? ''); ?>">
-                     <?php if (isset(\$errors['phone_number'])): ?><p class="error-message"><?php echo \$errors['phone_number']; ?></p><?php endif; ?>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                    <?php if (isset(\$errors['password'])): ?><p class="error-message"><?php echo \$errors['password']; ?></p><?php endif; ?>
-                </div>
-                <div class="form-group">
-                    <label for="confirm_password">Confirm Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required>
-                    <?php if (isset(\$errors['confirm_password'])): ?><p class="error-message"><?php echo \$errors['confirm_password']; ?></p><?php endif; ?>
-                </div>
-                <div class="form-group"><button type="submit">Register</button></div>
-            </form>
-            <p style="text-align:center; margin-top:15px;">Already have an account? <a href="<?php echo BASE_URL; ?>/index.php?route=login">Login here</a>.</p>
+            </div>
         </div>
     </main>
-    <footer><p>&copy; <?php echo date("Y"); ?> <?php echo SITE_NAME; ?>. All rights reserved.</p></footer>
+    <footer class="bg-dark text-white text-center p-4 mt-auto">
+        <div class="container">
+            <p class="mb-0">&copy; <?php echo date("Y"); ?> <?php echo SITE_NAME; ?> - [تمامی حقوق محفوظ است.]</p>
+            <p class="mb-0">
+                <a href="<?php echo BASE_URL; ?>/index.php?route=terms" class="text-white-50">[شرایط استفاده از خدمات]</a> |
+                <a href="<?php echo BASE_URL; ?>/index.php?route=contact" class="text-white-50">[تماس با ما]</a>
+            </p>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
 </html>

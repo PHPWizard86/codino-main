@@ -11,7 +11,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Authentication Check
 if (!isset(\$_SESSION['user_id'])) {
-    \$_SESSION['flash_message'] = 'Please log in to access the dashboard.';
+    \$_SESSION['flash_message'] = '[لطفا برای دسترسی به داشبورد خود وارد شوید.]'; // Localized this message
     \$_SESSION['flash_type'] = 'danger';
     header('Location: ' . BASE_URL . '/index.php?route=login');
     exit;
@@ -20,57 +20,79 @@ if (!isset(\$_SESSION['user_id'])) {
 \$user_name = htmlspecialchars(\$_SESSION['user_name'] ?? 'User');
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - <?php echo SITE_NAME; ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <title>[داشبورد] - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css">
-    <style>
-        .dashboard-container { max-width: 960px; margin: 20px auto; padding: 20px; }
-        .dashboard-nav ul { list-style-type: none; padding: 0; }
-        .dashboard-nav ul li { margin-bottom: 10px; }
-        .dashboard-nav ul li a { text-decoration: none; color: #007bff; font-size: 1.1em; }
-        .dashboard-nav ul li a:hover { text-decoration: underline; }
-    </style>
 </head>
 <body>
     <header>
-        <h1><a href="<?php echo BASE_URL; ?>/index.php?route=home" style="color:white;text-decoration:none;"><?php echo SITE_NAME; ?></a> - Dashboard</h1>
-        <nav>
-            <a href="<?php echo BASE_URL; ?>/index.php?route=home">Home</a>
-            <a href="<?php echo BASE_URL; ?>/index.php?route=dashboard_profile">Profile</a>
-            {# Add links to website and ticket management later #}
-            <a href="<?php echo BASE_URL; ?>/logout.php">Logout (<?php echo \$user_name; ?>)</a>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<?php echo BASE_URL; ?>/index.php?route=home"><?php echo SITE_NAME; ?></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="[تغییر وضعیت ناوبری]">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php?route=home">[خانه]</a>
+                        </li>
+                        <?php if (isset(\$_SESSION['user_id'])): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>/index.php?route=dashboard_home">[داشبورد]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>/logout.php">[خروج] (<?php echo \$user_name; ?>)</a>
+                            </li>
+                        <?php else: ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php?route=login">[ورود]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>/index.php?route=register">[ثبت نام]</a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+            </div>
         </nav>
     </header>
 
-    <main class="dashboard-container">
-        <h2>Welcome to Your Dashboard, <?php echo \$user_name; ?>!</h2>
+    <main class="container mt-4">
+        <h2>[به داشبورد خود خوش آمدید،] <?php echo \$user_name; ?>!</h2>
 
         <?php if (isset(\$_SESSION['flash_message'])): ?>
-            <div class="alert alert-<?php echo \$_SESSION['flash_type'] ?? 'info'; ?>" style="margin-bottom:20px; padding: 10px; border-radius: 4px;
-                <?php if((\$_SESSION['flash_type'] ?? 'info') == 'success'): ?> background-color:#d4edda; color:#155724; border:1px solid #c3e6cb;
-                <?php else: ?> background-color:#f8d7da; color:#721c24; border:1px solid #f5c6cb; <?php endif; ?>
-            ">
-                <?php echo \$_SESSION['flash_message']; ?>
+            <div class="alert alert-<?php echo htmlspecialchars(\$_SESSION['flash_type'] ?? 'info'); ?> alert-dismissible fade show" role="alert">
+                <?php echo htmlspecialchars(\$_SESSION['flash_message']); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="[بستن]"></button>
             </div>
             <?php unset(\$_SESSION['flash_message']); unset(\$_SESSION['flash_type']); ?>
         <?php endif; ?>
 
-        <p>This is your central hub for managing your account, websites, and support tickets.</p>
+        <p>[این مرکز مدیریت حساب کاربری، وب سایت ها و تیکت های پشتیبانی شماست.]</p>
 
         <nav class="dashboard-nav">
             <ul>
-                <li><a href="<?php echo BASE_URL; ?>/index.php?route=dashboard_profile">View/Edit Profile</a></li>
-                <li><a href="<?php echo BASE_URL; ?>/index.php?route=dashboard_websites">Manage My Websites</a></li>
-                <li><a href="#">Manage Support Tickets (Coming Soon)</a></li>
+                <li><a href="<?php echo BASE_URL; ?>/index.php?route=dashboard_profile">[مشاهده/ویرایش پروفایل]</a></li>
+                <li><a href="<?php echo BASE_URL; ?>/index.php?route=dashboard_websites">[مدیریت وب سایت های من]</a></li>
+                <li><a href="#">[مدیریت تیکت های پشتیبانی (به زودی)]</a></li>
             </ul>
         </nav>
     </main>
 
-    <footer>
-        <p>&copy; <?php echo date("Y"); ?> <?php echo SITE_NAME; ?>. All rights reserved.</p>
+    <footer class="bg-dark text-white text-center p-4 mt-auto">
+        <div class="container">
+            <p class="mb-0">&copy; <?php echo date("Y"); ?> <?php echo SITE_NAME; ?> - [تمامی حقوق محفوظ است.]</p>
+            <p class="mb-0">
+                <a href="<?php echo BASE_URL; ?>/index.php?route=terms" class="text-white-50">[شرایط استفاده از خدمات]</a> |
+                <a href="<?php echo BASE_URL; ?>/index.php?route=contact" class="text-white-50">[تماس با ما]</a>
+            </p>
+        </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
 </html>

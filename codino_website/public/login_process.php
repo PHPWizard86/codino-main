@@ -16,7 +16,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Ensure this script is accessed via POST
 if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
-    \$_SESSION['flash_message'] = 'Invalid request method.';
+    \$_SESSION['flash_message'] = '[روش درخواست نامعتبر است.]';
     \$_SESSION['flash_type'] = 'danger';
     header('Location: ' . BASE_URL . '/index.php?route=login');
     exit;
@@ -30,13 +30,13 @@ if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
 \$old_input = ['email' => \$email];
 
 if (empty(\$email)) {
-    \$errors['email'] = 'Email is required.';
+    \$errors['email'] = '[ایمیل الزامی است.]';
 } elseif (!filter_var(\$email, FILTER_VALIDATE_EMAIL)) {
-    \$errors['email'] = 'Invalid email format.';
+    \$errors['email'] = '[فرمت ایمیل نامعتبر است.]';
 }
 
 if (empty(\$password)) {
-    \$errors['password'] = 'Password is required.';
+    \$errors['password'] = '[رمز عبور الزامی است.]';
 }
 
 if (!empty(\$errors)) {
@@ -68,13 +68,13 @@ try {
         session_regenerate_id(true);
 
         // Redirect to dashboard (placeholder - dashboard route/page not yet created)
-        \$_SESSION['flash_message'] = 'Login successful! Welcome back, ' . htmlspecialchars(\$_SESSION['user_name']) . '.';
+        \$_SESSION['flash_message'] = '[ورود موفقیت آمیز بود! خوش آمدید،] ' . htmlspecialchars(\$_SESSION['user_name']) . '.';
         \$_SESSION['flash_type'] = 'success';
         header('Location: ' . BASE_URL . '/index.php?route=dashboard_home'); // Target dashboard route
         exit;
     } else {
         // Invalid credentials
-        \$errors['credentials'] = 'Invalid email or password.';
+        \$errors['credentials'] = '[ایمیل یا رمز عبور نامعتبر است.]';
         \$_SESSION['errors'] = \$errors;
         \$_SESSION['old_input'] = \$old_input;
         header('Location: ' . BASE_URL . '/index.php?route=login');
@@ -83,13 +83,13 @@ try {
 
 } catch (PDOException \$e) {
     error_log("Database error during login: " . \$e->getMessage());
-    \$_SESSION['errors'] = ['credentials' => 'A database error occurred. Please try again later.'];
+    \$_SESSION['errors'] = ['credentials' => '[یک خطای پایگاه داده رخ داد. لطفا بعدا دوباره تلاش کنید.]'];
     \$_SESSION['old_input'] = \$old_input;
     header('Location: ' . BASE_URL . '/index.php?route=login');
     exit;
 } catch (Exception \$e) {
     error_log("General error during login: " . \$e->getMessage());
-    \$_SESSION['errors'] = ['credentials' => 'An unexpected error occurred. Please try again.'];
+    \$_SESSION['errors'] = ['credentials' => '[یک خطای غیر منتظره رخ داد. لطفا دوباره تلاش کنید.]'];
     \$_SESSION['old_input'] = \$old_input;
     header('Location: ' . BASE_URL . '/index.php?route=login');
     exit;

@@ -78,10 +78,10 @@ try {
     echo "\nSeeding process complete.\n";
 
 } catch (PDOException \$e) {
-    echo "Error during seeding: " . \$e->getMessage() . "\n";
+    echo "Error during seeding: " . htmlspecialchars(\$e->getMessage()) . "\n";
     error_log("Seeding script PDOException: " . \$e->getMessage());
 } catch (Exception \$e) {
-    echo "An unexpected error occurred: " . \$e->getMessage() . "\n";
+    echo "An unexpected error occurred: " . htmlspecialchars(\$e->getMessage()) . "\n";
     error_log("Seeding script Exception: " . \$e->getMessage());
 }
 

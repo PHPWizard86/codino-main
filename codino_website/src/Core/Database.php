@@ -45,7 +45,7 @@ class Database {
             error_log("Database Connection Error: " . \$e->getMessage());
             // For development, you might want to see the error directly.
             // For production, you'd show a generic error message.
-            die("Database connection failed. Please check logs or contact support. Error: " . \$e->getMessage()); // Added error message for clarity
+            die("Database connection failed. Please check logs or contact support. Error: " . htmlspecialchars(\$e->getMessage())); // Added error message for clarity
         }
     }
 

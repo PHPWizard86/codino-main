@@ -18,7 +18,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Ensure this script is accessed via POST
 if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
-    \$_SESSION['flash_message'] = 'Invalid request method.';
+    \$_SESSION['flash_message'] = '[روش درخواست نامعتبر است.]';
     \$_SESSION['flash_type'] = 'danger';
     header('Location: ' . BASE_URL . '/index.php?route=register');
     exit;
@@ -42,30 +42,30 @@ if (\$_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Email validation
 if (empty(\$email)) {
-    \$errors['email'] = 'Email is required.';
+    \$errors['email'] = '[ایمیل الزامی است.]';
 } elseif (!filter_var(\$email, FILTER_VALIDATE_EMAIL)) {
-    \$errors['email'] = 'Invalid email format.';
+    \$errors['email'] = '[فرمت ایمیل نامعتبر است.]';
 }
 
 // Phone number (optional, basic validation if provided)
 if (!empty(\$phone_number)) {
     if (!preg_match('/^[0-9+()-]{7,20}\$/', \$phone_number)) { // Basic regex for phone chars
-        \$errors['phone_number'] = 'Invalid characters in phone number or invalid length.';
+        \$errors['phone_number'] = '[کاراکترهای نامعتبر در شماره تلفن یا طول نامعتبر است.]';
     }
 }
 
 // Password validation
 if (empty(\$password)) {
-    \$errors['password'] = 'Password is required.';
+    \$errors['password'] = '[رمز عبور الزامی است.]';
 } elseif (strlen(\$password) < 8) {
-    \$errors['password'] = 'Password must be at least 8 characters long.';
+    \$errors['password'] = '[رمز عبور باید حداقل ۸ کاراکتر باشد.]';
 }
 
 // Confirm password validation
 if (empty(\$confirm_password)) {
-    \$errors['confirm_password'] = 'Please confirm your password.';
+    \$errors['confirm_password'] = '[لطفا رمز عبور خود را تایید کنید.]';
 } elseif (\$password !== \$confirm_password) {
-    \$errors['confirm_password'] = 'Passwords do not match.';
+    \$errors['confirm_password'] = '[رمزهای عبور مطابقت ندارند.]';
 }
 
 if (!empty(\$errors)) {
@@ -84,7 +84,7 @@ try {
     \$stmt->bindParam(':email', \$email);
     \$stmt->execute();
     if (\$stmt->fetch()) {
-        \$errors['email'] = 'This email address is already registered.';
+        \$errors['email'] = '[این آدرس ایمیل قبلا ثبت شده است.]';
     }
 
     // Check if phone number already exists (if provided)
@@ -93,7 +93,7 @@ try {
         \$stmt->bindParam(':phone_number', \$phone_number);
         \$stmt->execute();
         if (\$stmt->fetch()) {
-            \$errors['phone_number'] = 'This phone number is already registered.';
+            \$errors['phone_number'] = '[این شماره تلفن قبلا ثبت شده است.]';
         }
     }
 
@@ -146,7 +146,7 @@ try {
     \$stmt->execute();
 
     // Set success message and redirect to login page (or homepage with message)
-    \$_SESSION['flash_message'] = 'Registration successful! Please log in.';
+    \$_SESSION['flash_message'] = '[ثبت نام موفقیت آمیز بود! لطفا وارد شوید.]';
     \$_SESSION['flash_type'] = 'success';
     // We'll create the login route and page in the next step.
     // For now, redirecting to registration page with success message.
@@ -156,13 +156,13 @@ try {
 
 } catch (PDOException \$e) {
     error_log("Database error during registration: " . \$e->getMessage());
-    \$_SESSION['errors'] = ['database' => 'A database error occurred. Please try again later.'];
+    \$_SESSION['errors'] = ['database' => '[یک خطای پایگاه داده رخ داد. لطفا بعدا دوباره تلاش کنید.]'];
     \$_SESSION['old_input'] = \$old_input; // Preserve input
     header('Location: ' . BASE_URL . '/index.php?route=register');
     exit;
 } catch (Exception \$e) {
     error_log("General error during registration: " . \$e->getMessage());
-    \$_SESSION['errors'] = ['general' => 'An unexpected error occurred. Please try again.'];
+    \$_SESSION['errors'] = ['general' => '[یک خطای غیر منتظره رخ داد. لطفا دوباره تلاش کنید.]'];
     \$_SESSION['old_input'] = \$old_input; // Preserve input
     header('Location: ' . BASE_URL . '/index.php?route=register');
     exit;
